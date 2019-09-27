@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+
 import time
 import json
 
@@ -41,7 +42,7 @@ class GrayscaleBlock(SampleBase):
             
             # sleep
             print("Sleeping ...")
-            time.sleep(1)
+            time.sleep(0.1)
             print("Loop done.")
             print()
 
