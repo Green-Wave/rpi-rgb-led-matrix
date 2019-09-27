@@ -42,6 +42,10 @@ class GrayscaleBlock(SampleBase):
                 print("Unexpected error:", sys.exc_info()[0])
                 continue
 
+            # make last seconds empty frame
+            seconds_phase_left -= 5
+            seconds_phase_total -= 5
+
             # color LED matrix
             print("Coloring LED...")
             ratio_left = seconds_phase_left / seconds_phase_total
