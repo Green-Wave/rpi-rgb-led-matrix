@@ -22,27 +22,30 @@ class GrayscaleBlock(SampleBase):
         while True:
             # get phase timing
             print("Starting loop...")
-            response = self.get_seconds_phase_left()
+            color, seconds_phase_left, seconds_phase_total = self.get_http_time()
             # color LED matrix
             print("Coloring LED...")
-            if response["is_green"]:
-                color = "green"
-            else:
-                color = "red"
-            ratio_left = response["seconds_phase_left"] / response["seconds_phase_total"]
+            ratio_left = seconds_phase_left / seconds_phase_total
             self.color(color=color, ratio_left=ratio_left)
+            
             # sleep
             print("Sleeping ...")
             time.sleep(1)
             print("Loop done.")
             print()
 
-    def get_seconds_phase_left(self) -> dict:
+    def get_http_time(self):
         print("Getting seconds left for :phase...")
         response = requests.get("http://172.16.2.62/seconds_phase_left")
-        json_response = json.loads(response.text)
-        print(json_response)
-        return json_response
+        res_dict = json.loads(response.text)
+        print(res_dict)
+        if res_dict["is_green"]:
+            color = "green"
+        else:
+            color = "red"
+        seconds_phase_left = res_dict["seconds_phase_left"]
+        seconds_phase_total = res_dict["seconds_phase_total"]
+        return color, seconds_phase_left, seconds_phase_total
 
     def color(self, color, ratio_left):
         width = self.matrix.width  # 64
