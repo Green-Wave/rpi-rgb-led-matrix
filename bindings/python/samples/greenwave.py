@@ -2,6 +2,7 @@
 
 import time
 import json
+import sys
 
 import requests
 
@@ -33,7 +34,13 @@ class GrayscaleBlock(SampleBase):
             # get phase timing
             print("Starting loop...")
             # color, seconds_phase_left, seconds_phase_total = self.get_http_time()
-            color, seconds_phase_left, seconds_phase_total = self.get_lora_time()
+            try:
+                color, seconds_phase_left, seconds_phase_total = self.get_lora_time()
+            except KeyboardInterrupt:
+                raise
+            except:
+                print("Unexpected error:", sys.exc_info()[0])
+                continue
 
             # color LED matrix
             print("Coloring LED...")
