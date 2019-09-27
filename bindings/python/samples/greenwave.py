@@ -1,28 +1,39 @@
-#!/usr/bin/env python
-from samplebase import SampleBase
+#!/usr/bin/env python3
 import time
 import json
 
 import requests
 
+# RGB MATRIX IMPORTS
+from samplebase import SampleBase
 
-RESPONSE_MOCKUP = {
-    "id_light": 1,
-    "is_green": True,
-    "is_red": False,
-    "seconds_phase_left": 44.1,
-    "seconds_phase_total": 50.0,
-}
+# LORA IMPORTS
+import board
+import busio
+import digitalio
+import adafruit_rfm9x
+
+# LORA CONFIG
+RADIO_FREQ_MHZ = 868.0  
+CS = digitalio.DigitalInOut(board.CE1)
+RESET = digitalio.DigitalInOut(board.D25)
+# LORA SETUP
+spi = busio.SPI(board.SCK, MOSI=board.MOSI, MISO=board.MISO)
+rfm9x = adafruit_rfm9x.RFM9x(spi, CS, RESET, RADIO_FREQ_MHZ)
+
 
 class GrayscaleBlock(SampleBase):
     def __init__(self, *args, **kwargs):
         super(GrayscaleBlock, self).__init__(*args, **kwargs)
 
+
     def run(self):
         while True:
             # get phase timing
             print("Starting loop...")
-            color, seconds_phase_left, seconds_phase_total = self.get_http_time()
+            # color, seconds_phase_left, seconds_phase_total = self.get_http_time()
+            color, seconds_phase_left, seconds_phase_total = self.get_lora_time()
+
             # color LED matrix
             print("Coloring LED...")
             ratio_left = seconds_phase_left / seconds_phase_total
@@ -33,6 +44,28 @@ class GrayscaleBlock(SampleBase):
             time.sleep(1)
             print("Loop done.")
             print()
+
+    def get_lora_time(self):
+        packet = rfm9x.receive(timeout=5)
+        if packet is None:
+            # Packet has not been received
+            print('Received nothing! Listening again...') 
+        else:
+            print('Received (raw bytes): {0}'.format(packet))
+            packet_text = str(packet, 'ascii')
+            print('Received (ASCII): {0}'.format(packet_text))
+            [green, seconds_left, seconds_total] = packet_text.split(";")
+            if green == "1":
+                color = "green"
+            else:
+                color = "red"
+            print(f"color: {color}")
+            print("seconds left:", seconds_left)
+            print("seconds total:", seconds_total)
+            # Also read the RSSI (signal strength) of the last received message and print it.
+            rssi = rfm9x.rssi
+            print('Received signal strength: {0} dB'.format(rssi))
+            return color, float(seconds_left), float(seconds_total)
 
     def get_http_time(self):
         print("Getting seconds left for :phase...")
