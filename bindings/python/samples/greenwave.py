@@ -17,6 +17,9 @@ import adafruit_rfm9x
 
 from minipicture import muensterhack
 
+from PIL import Image
+from PIL import ImageDraw
+
 # LORA CONFIG
 RADIO_FREQ_MHZ = 868.0  
 CS = digitalio.DigitalInOut(board.CE1)
@@ -138,20 +141,27 @@ class GrayscaleBlock(SampleBase):
         else:
             print("minipicture")
             # minipicture == 1: muensterhack logo
-            r, g, b = None, None, None
-            cnt = 0
-            for i in muensterhack:
-                if r is None:
-                    r = i
-                elif g is None:
-                    g = i
-                elif b is None:
-                    b = i
-                else:
-                    print(f"{cnt % width}  {cnt // height}  {r}  {g}  {b}")
-                    self.matrix.SetPixel(cnt // width, cnt % height, b, g, r)
-                    r, g, b = None, None, None
-                    cnt = cnt + 1
+            # r, g, b = None, None, None
+            # cnt = 0
+            # for i in muensterhack:
+            #     if r is None:
+            #         r = i
+            #     elif g is None:
+            #         g = i
+            #     elif b is None:
+            #         b = i
+            #     else:
+            #         print(f"{cnt % width}  {cnt // height}  {r}  {g}  {b}")
+            #         self.matrix.SetPixel(cnt // width, cnt % height, b, g, r)
+            #         r, g, b = None, None, None
+            # cnt = cnt + 1
+            
+            # Then scroll image across matrix...
+            for n in range(-32, 33):  # Start off top-left, move off bottom-right
+                matrix.Clear()
+                matrix.SetImage(image, n, n)
+                time.sleep(0.05)
+
 
 
 # Main function
