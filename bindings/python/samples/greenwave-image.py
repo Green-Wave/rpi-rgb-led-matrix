@@ -55,7 +55,7 @@ class GrayscaleBlock(SampleBase):
      
         print("minipicture")
         # Then scroll image across matrix...
-        image = Image.open("img/muensterhacklogo.png").rotate(90)
+        image = Image.open("img/muensterhacklogo.png").rotate(90).convert('RGB')
         for n in range(33):  # Start off top-left, move off bottom-right
             self.matrix.Clear()
             self.matrix.SetImage(image, n, -1)
