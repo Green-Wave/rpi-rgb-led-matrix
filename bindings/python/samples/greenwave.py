@@ -15,7 +15,7 @@ import busio
 import digitalio
 import adafruit_rfm9x
 
-from minipicture_def import muensterhack
+from minipicture import muensterhack
 
 # LORA CONFIG
 RADIO_FREQ_MHZ = 868.0  
@@ -136,6 +136,7 @@ class GrayscaleBlock(SampleBase):
                     self.matrix.SetPixel(x, 0, brightness, 0, 0)
                     self.matrix.SetPixel(x, height - 1, brightness, 0, 0)
         else:
+            print("minipicture")
             # minipicture == 1: muensterhack logo
             r, g, b = None, None, None
             cnt = 0
@@ -147,8 +148,10 @@ class GrayscaleBlock(SampleBase):
                 elif b is None:
                     b = i
                 else:
-                    self.matrix.SetPixel(cnt % width, cnt // height, r, g, b)
+                    print(f"{cnt % width}  {cnt // height}  {r}  {g}  {b}")
+                    self.matrix.SetPixel(cnt // width, cnt % height, b, g, r)
                     r, g, b = None, None, None
+                    cnt = cnt + 1
 
 
 # Main function
