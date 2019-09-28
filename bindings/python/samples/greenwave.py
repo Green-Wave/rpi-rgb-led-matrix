@@ -15,6 +15,11 @@ import busio
 import digitalio
 import adafruit_rfm9x
 
+
+from PIL import Image
+from PIL import ImageDraw
+
+
 # LORA CONFIG
 RADIO_FREQ_MHZ = 868.0  
 CS = digitalio.DigitalInOut(board.CE1)
