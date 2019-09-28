@@ -157,10 +157,16 @@ class GrayscaleBlock(SampleBase):
             # cnt = cnt + 1
             
             # Then scroll image across matrix...
-            for n in range(-32, 33):  # Start off top-left, move off bottom-right
-                matrix.Clear()
-                matrix.SetImage(image, n, n)
+            image = Image.open("img/muensterhacklogo.png").rotate(90)
+            for n in range(33):  # Start off top-left, move off bottom-right
+                self.matrix.Clear()
+                self.matrix.SetImage(image, n, -1)
                 time.sleep(0.05)
+            for n in range(33):  # Start off top-left, move off bottom-right
+                self.matrix.Clear()
+                self.matrix.SetImage(image, 32 - n, -1)
+                time.sleep(0.05)
+
 
 
 
