@@ -15,7 +15,7 @@ import busio
 import digitalio
 import adafruit_rfm9x
 
-from minipicture_def import muensterhack
+from minipicture mport muensterhack
 
 # LORA CONFIG
 RADIO_FREQ_MHZ = 868.0  
