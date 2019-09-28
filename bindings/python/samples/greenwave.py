@@ -15,6 +15,8 @@ import busio
 import digitalio
 import adafruit_rfm9x
 
+from minipicture_def import muensterhack
+
 # LORA CONFIG
 RADIO_FREQ_MHZ = 868.0  
 CS = digitalio.DigitalInOut(board.CE1)
@@ -94,41 +96,60 @@ class GrayscaleBlock(SampleBase):
         time.sleep(0.5)
         return color, seconds_phase_left, seconds_phase_total
 
-    def color(self, color, ratio_left):
+    def color(self, color, ratio_left, minipicture=0):
         width = self.matrix.width  # 64
         height = self.matrix.height  # 32
-        if color == "green":
-            brightness = 155
-        else:
-            brightness = 100   # 255 with red pull too much power
-        width_on = width * ratio_left
+         # if minipicture is None or minipicture <= 0 or minipicture >= 5:
+        if False:
+            if color == "green":
+                brightness = 155
+            else:
+                brightness = 100   # 255 with red pull too much power
 
-        # draw 'ratio left'
-        for y in range(1, height - 1):
-            for x in range(1, width - 1):
-                if x >= (width - int(width_on)):
-                    if color == "green":
-                        self.matrix.SetPixel(x, y, 0, brightness, 0)
-                    elif color == "red": 
-                        self.matrix.SetPixel(x, y, brightness, 0, 0)
+            # show normal filling
+            width_on = width * ratio_left
+
+            # draw 'ratio left'
+            for y in range(1, height - 1):
+                for x in range(1, width - 1):
+                    if x >= (width - int(width_on)):
+                        if color == "green":
+                            self.matrix.SetPixel(x, y, 0, brightness, 0)
+                        elif color == "red": 
+                            self.matrix.SetPixel(x, y, brightness, 0, 0)
+                    else:
+                        self.matrix.SetPixel(x, y, 0, 0, 0)
+            
+            # draw frame
+            for y in range(0, height):
+                if color == "green":
+                    self.matrix.SetPixel(0, y, 0, brightness, 0)
+                    self.matrix.SetPixel(width - 1, y, 0, brightness, 0)
+                elif color == "red": 
+                    self.matrix.SetPixel(0, y, brightness, 0, 0)
+                    self.matrix.SetPixel(width - 1, y, brightness, 0, 0)
+            for x in range(0, width):
+                if color == "green":
+                    self.matrix.SetPixel(x, 0, 0, brightness, 0)
+                    self.matrix.SetPixel(x, height - 1, 0, brightness, 0)
+                elif color == "red": 
+                    self.matrix.SetPixel(x, 0, brightness, 0, 0)
+                    self.matrix.SetPixel(x, height - 1, brightness, 0, 0)
+        else:
+            # minipicture == 1: muensterhack logo
+            r, g, b = None, None, None
+            cnt = 0
+            for i in muensterhack:
+                if r is None:
+                    r = i
+                elif g is None:
+                    g = i
+                elif b is None:
+                    b = i
                 else:
-                    self.matrix.SetPixel(x, y, 0, 0, 0)
-         
-        # draw frame
-        for y in range(0, height):
-            if color == "green":
-                self.matrix.SetPixel(0, y, 0, brightness, 0)
-                self.matrix.SetPixel(width - 1, y, 0, brightness, 0)
-            elif color == "red": 
-                self.matrix.SetPixel(0, y, brightness, 0, 0)
-                self.matrix.SetPixel(width - 1, y, brightness, 0, 0)
-        for x in range(0, width):
-            if color == "green":
-                self.matrix.SetPixel(x, 0, 0, brightness, 0)
-                self.matrix.SetPixel(x, height - 1, 0, brightness, 0)
-            elif color == "red": 
-                self.matrix.SetPixel(x, 0, brightness, 0, 0)
-                self.matrix.SetPixel(x, height - 1, brightness, 0, 0)
+                    self.matrix.SetPixel(cnt % width, cnt // height, r, g, b)
+                    r, g, b = None, None, None
+
 
 # Main function
 if __name__ == "__main__":
