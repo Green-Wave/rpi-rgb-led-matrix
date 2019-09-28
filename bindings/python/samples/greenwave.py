@@ -35,12 +35,17 @@ class GrayscaleBlock(SampleBase):
             print("Starting loop...")
             # color, seconds_phase_left, seconds_phase_total = self.get_http_time()
             try:
+                print("getting lora...")
                 color, seconds_phase_left, seconds_phase_total = self.get_lora_time()
             except KeyboardInterrupt:
                 raise
             except:
                 print("Unexpected error:", sys.exc_info()[0])
                 continue
+
+            # make last seconds empty frame
+            seconds_phase_left -= 5
+            seconds_phase_total -= 5
 
             # color LED matrix
             print("Coloring LED...")
@@ -77,7 +82,7 @@ class GrayscaleBlock(SampleBase):
 
     def get_http_time(self):
         print("Getting seconds left for :phase...")
-        response = requests.get("http://172.16.2.62/seconds_phase_left")
+        response = requests.get("http://172.16.2.107/seconds_phase_left")
         res_dict = json.loads(response.text)
         print(res_dict)
         if res_dict["is_green"]:
@@ -86,20 +91,21 @@ class GrayscaleBlock(SampleBase):
             color = "red"
         seconds_phase_left = res_dict["seconds_phase_left"]
         seconds_phase_total = res_dict["seconds_phase_total"]
+        time.sleep(0.5)
         return color, seconds_phase_left, seconds_phase_total
 
     def color(self, color, ratio_left):
         width = self.matrix.width  # 64
         height = self.matrix.height  # 32
         if color == "green":
-            brightness = 255
+            brightness = 155
         else:
-            brightness = 150   # 255 with red pull too much power
+            brightness = 100   # 255 with red pull too much power
         width_on = width * ratio_left
 
         # draw 'ratio left'
-        for y in range(0, height):
-            for x in range(0, width):
+        for y in range(1, height - 1):
+            for x in range(1, width - 1):
                 if x >= (width - int(width_on)):
                     if color == "green":
                         self.matrix.SetPixel(x, y, 0, brightness, 0)
@@ -107,7 +113,22 @@ class GrayscaleBlock(SampleBase):
                         self.matrix.SetPixel(x, y, brightness, 0, 0)
                 else:
                     self.matrix.SetPixel(x, y, 0, 0, 0)
-
+         
+        # draw frame
+        for y in range(0, height):
+            if color == "green":
+                self.matrix.SetPixel(0, y, 0, brightness, 0)
+                self.matrix.SetPixel(width - 1, y, 0, brightness, 0)
+            elif color == "red": 
+                self.matrix.SetPixel(0, y, brightness, 0, 0)
+                self.matrix.SetPixel(width - 1, y, brightness, 0, 0)
+        for x in range(0, width):
+            if color == "green":
+                self.matrix.SetPixel(x, 0, 0, brightness, 0)
+                self.matrix.SetPixel(x, height - 1, 0, brightness, 0)
+            elif color == "red": 
+                self.matrix.SetPixel(x, 0, brightness, 0, 0)
+                self.matrix.SetPixel(x, height - 1, brightness, 0, 0)
 
 # Main function
 if __name__ == "__main__":
