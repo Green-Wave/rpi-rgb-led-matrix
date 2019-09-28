@@ -50,7 +50,7 @@ class GrayscaleBlock(SampleBase):
             # color LED matrix
             print("Coloring LED...")
             ratio_left = seconds_phase_left / seconds_phase_total
-            self.color(color=color, ratio_left=ratio_left)
+            self.color(color=color, ratio_left=ratio_left, total=seconds_phase_total)
             
             # sleep
             print("Sleeping ...")
@@ -94,41 +94,54 @@ class GrayscaleBlock(SampleBase):
         time.sleep(0.5)
         return color, seconds_phase_left, seconds_phase_total
 
-    def color(self, color, ratio_left):
+    def color(self, color, ratio_left, total):
         width = self.matrix.width  # 64
         height = self.matrix.height  # 32
-        if color == "green":
-            brightness = 155
-        else:
-            brightness = 100   # 255 with red pull too much power
-        width_on = width * ratio_left
 
-        # draw 'ratio left'
-        for y in range(1, height - 1):
-            for x in range(1, width - 1):
-                if x >= (width - int(width_on)):
-                    if color == "green":
-                        self.matrix.SetPixel(x, y, 0, brightness, 0)
-                    elif color == "red": 
-                        self.matrix.SetPixel(x, y, brightness, 0, 0)
-                else:
-                    self.matrix.SetPixel(x, y, 0, 0, 0)
-         
-        # draw frame
-        for y in range(0, height):
+        if total < 1000:
             if color == "green":
-                self.matrix.SetPixel(0, y, 0, brightness, 0)
-                self.matrix.SetPixel(width - 1, y, 0, brightness, 0)
-            elif color == "red": 
-                self.matrix.SetPixel(0, y, brightness, 0, 0)
-                self.matrix.SetPixel(width - 1, y, brightness, 0, 0)
-        for x in range(0, width):
-            if color == "green":
-                self.matrix.SetPixel(x, 0, 0, brightness, 0)
-                self.matrix.SetPixel(x, height - 1, 0, brightness, 0)
-            elif color == "red": 
-                self.matrix.SetPixel(x, 0, brightness, 0, 0)
-                self.matrix.SetPixel(x, height - 1, brightness, 0, 0)
+                brightness = 155
+            else:
+                brightness = 100   # 255 with red pull too much power
+            width_on = width * ratio_left
+
+            # draw 'ratio left'
+            for y in range(1, height - 1):
+                for x in range(1, width - 1):
+                    if x >= (width - int(width_on)):
+                        if color == "green":
+                            self.matrix.SetPixel(x, y, 0, brightness, 0)
+                        elif color == "red": 
+                            self.matrix.SetPixel(x, y, brightness, 0, 0)
+                    else:
+                        self.matrix.SetPixel(x, y, 0, 0, 0)
+            
+            # draw frame
+            for y in range(0, height):
+                if color == "green":
+                    self.matrix.SetPixel(0, y, 0, brightness, 0)
+                    self.matrix.SetPixel(width - 1, y, 0, brightness, 0)
+                elif color == "red": 
+                    self.matrix.SetPixel(0, y, brightness, 0, 0)
+                    self.matrix.SetPixel(width - 1, y, brightness, 0, 0)
+            for x in range(0, width):
+                if color == "green":
+                    self.matrix.SetPixel(x, 0, 0, brightness, 0)
+                    self.matrix.SetPixel(x, height - 1, 0, brightness, 0)
+                elif color == "red": 
+                    self.matrix.SetPixel(x, 0, brightness, 0, 0)
+                    self.matrix.SetPixel(x, height - 1, brightness, 0, 0)
+        else:
+            print("minipicture")
+            # Then scroll image across matrix...
+            img_files = ["muensterhacklogo.png", "superheld.png", "superheld2.png", "superheld3.png"]
+            for img_file in img_files:
+                image = Image.open("img/" + img_file).rotate(90, expand=True).convert('RGB')
+                offset = -1
+                for n in range(64, -64, -1):
+                    self.matrix.Clear()
+                    self.matrix.SetImage(image, n, offset)
+                    time.sleep(0.05)
 
 # Main function
 if __name__ == "__main__":
