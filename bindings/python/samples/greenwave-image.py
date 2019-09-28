@@ -57,7 +57,7 @@ class GrayscaleBlock(SampleBase):
         for img_file in img_files:
             image = Image.open("img/" + img_file).rotate(90, expand=True).convert('RGB')
             offset = -1
-            for n in range(64, -64):
+            for n in range(64, -64, -1):
                 self.matrix.Clear()
                 self.matrix.SetImage(image, n, offset)
                 time.sleep(0.05)
