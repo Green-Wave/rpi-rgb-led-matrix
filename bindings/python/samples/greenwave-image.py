@@ -15,8 +15,6 @@ import busio
 import digitalio
 import adafruit_rfm9x
 
-from minipicture import muensterhack
-
 from PIL import Image
 from PIL import ImageDraw
 
@@ -62,7 +60,10 @@ class GrayscaleBlock(SampleBase):
             offset = -10
         for n in range(33):  # Start off top-left, move off bottom-right
             self.matrix.Clear()
+            _image = image.crop((0, 0, 32, 32))
             self.matrix.SetImage(image, n, offset)
+            _image = image.crop((32, 0, 64, 32))
+            self.matrix.SetImage(image, n + 32, offset)
             time.sleep(0.05)
         for n in range(33):  # Start off top-left, move off bottom-right
             self.matrix.Clear()
