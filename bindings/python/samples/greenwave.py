@@ -36,7 +36,7 @@ class GrayscaleBlock(SampleBase):
             # color, seconds_phase_left, seconds_phase_total = self.get_http_time()
             try:
                 print("getting lora...")
-                color, seconds_phase_left, seconds_phase_total = self.get_lora_time()
+                color, seconds_phase_left, seconds_phase_total, phase_end_delay = self.get_lora_time()
             except KeyboardInterrupt:
                 raise
             except:
@@ -44,8 +44,8 @@ class GrayscaleBlock(SampleBase):
                 continue
 
             # make last seconds empty frame
-            seconds_phase_left -= 5
-            seconds_phase_total -= 5
+            seconds_phase_left -= phase_end_delay
+            seconds_phase_total -= phase_end_delay
 
             # color LED matrix
             print("Coloring LED...")
@@ -67,7 +67,7 @@ class GrayscaleBlock(SampleBase):
             print('Received (raw bytes): {0}'.format(packet))
             packet_text = str(packet, 'ascii')
             print('Received (ASCII): {0}'.format(packet_text))
-            [green, seconds_left, seconds_total] = packet_text.split(";")
+            [green, seconds_left, seconds_total, phase_end_delay] = packet_text.split(";")
             if green == "1":
                 color = "green"
             else:
@@ -75,10 +75,11 @@ class GrayscaleBlock(SampleBase):
             print(f"color: {color}")
             print("seconds left:", seconds_left)
             print("seconds total:", seconds_total)
+            print("phase end delay:", phase_end_delay)
             # Also read the RSSI (signal strength) of the last received message and print it.
             rssi = rfm9x.rssi
             print('Received signal strength: {0} dB'.format(rssi))
-            return color, float(seconds_left), float(seconds_total)
+            return color, float(seconds_left), float(seconds_total), float(phase_end_delay)
 
     def get_http_time(self):
         print("Getting seconds left for :phase...")
@@ -91,8 +92,9 @@ class GrayscaleBlock(SampleBase):
             color = "red"
         seconds_phase_left = res_dict["seconds_phase_left"]
         seconds_phase_total = res_dict["seconds_phase_total"]
+        phase_end_delay = res_dict["phase_end_delay"]
         time.sleep(0.5)
-        return color, seconds_phase_left, seconds_phase_total
+        return color, seconds_phase_left, seconds_phase_total, phase_end_delay
 
     def color(self, color, ratio_left):
         width = self.matrix.width  # 64
