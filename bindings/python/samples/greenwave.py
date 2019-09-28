@@ -35,6 +35,7 @@ class GrayscaleBlock(SampleBase):
             print("Starting loop...")
             # color, seconds_phase_left, seconds_phase_total = self.get_http_time()
             try:
+                print("getting lora...")
                 color, seconds_phase_left, seconds_phase_total = self.get_lora_time()
             except KeyboardInterrupt:
                 raise
@@ -81,7 +82,7 @@ class GrayscaleBlock(SampleBase):
 
     def get_http_time(self):
         print("Getting seconds left for :phase...")
-        response = requests.get("http://172.16.2.62/seconds_phase_left")
+        response = requests.get("http://172.16.2.107/seconds_phase_left")
         res_dict = json.loads(response.text)
         print(res_dict)
         if res_dict["is_green"]:
@@ -90,15 +91,16 @@ class GrayscaleBlock(SampleBase):
             color = "red"
         seconds_phase_left = res_dict["seconds_phase_left"]
         seconds_phase_total = res_dict["seconds_phase_total"]
+        time.sleep(0.5)
         return color, seconds_phase_left, seconds_phase_total
 
     def color(self, color, ratio_left):
         width = self.matrix.width  # 64
         height = self.matrix.height  # 32
         if color == "green":
-            brightness = 255
+            brightness = 155
         else:
-            brightness = 150   # 255 with red pull too much power
+            brightness = 100   # 255 with red pull too much power
         width_on = width * ratio_left
 
         # draw 'ratio left'
