@@ -10,21 +10,21 @@ import requests
 from samplebase import SampleBase
 
 # LORA IMPORTS
-import board
-import busio
-import digitalio
-import adafruit_rfm9x
+# import board
+# import busio
+# import digitalio
+# import adafruit_rfm9x
 
 from PIL import Image
 from PIL import ImageDraw
 
 # LORA CONFIG
-RADIO_FREQ_MHZ = 868.0  
-CS = digitalio.DigitalInOut(board.CE1)
-RESET = digitalio.DigitalInOut(board.D25)
+# RADIO_FREQ_MHZ = 868.0
+# CS = digitalio.DigitalInOut(board.CE1)
+# RESET = digitalio.DigitalInOut(board.D25)
 # LORA SETUP
-spi = busio.SPI(board.SCK, MOSI=board.MOSI, MISO=board.MISO)
-rfm9x = adafruit_rfm9x.RFM9x(spi, CS, RESET, RADIO_FREQ_MHZ)
+# spi = busio.SPI(board.SCK, MOSI=board.MOSI, MISO=board.MISO)
+# rfm9x = adafruit_rfm9x.RFM9x(spi, CS, RESET, RADIO_FREQ_MHZ)
 
 
 class GrayscaleBlock(SampleBase):
@@ -43,7 +43,7 @@ class GrayscaleBlock(SampleBase):
             
             # sleep
             print("Sleeping ...")
-            time.sleep(0.05)
+            time.sleep(10.05)
             print("Loop done.")
             print()
 
@@ -53,14 +53,15 @@ class GrayscaleBlock(SampleBase):
      
         print("minipicture")
         # Then scroll image across matrix...
-        img_files = ["muensterhacklogo.png", "superheld.png", "superheld2.png", "superheld3.png"]
+        img_files = ["muensterhacklogo.png"]  # , "superheld.png", "superheld2.png", "superheld3.png"]
         for img_file in img_files:
             image = Image.open("img/" + img_file).rotate(90, expand=True).convert('RGB')
             offset = -1
-            for n in range(64, -64, -1):
-                self.matrix.Clear()
-                self.matrix.SetImage(image, n, offset)
-                time.sleep(0.05)
+            # for n in range(64, -64, -1):
+            n = 0
+            self.matrix.Clear()
+            self.matrix.SetImage(image, n, offset)
+            # time.sleep(0.05)
 
 # Main function
 if __name__ == "__main__":
