@@ -1,6 +1,10 @@
 #!/usr/bin/env python
+import time
+
 from samplebase import SampleBase
 
+RED = list(range(35, 64))
+GREEN = range(0, 35)
 
 class SimpleSquare(SampleBase):
     def __init__(self, *args, **kwargs):
@@ -8,19 +12,17 @@ class SimpleSquare(SampleBase):
 
     def run(self):
         offset_canvas = self.matrix.CreateFrameCanvas()
-        while True:
-            for x in range(0, self.matrix.width):
-                offset_canvas.SetPixel(x, x, 255, 255, 255)
-                offset_canvas.SetPixel(offset_canvas.height - 1 - x, x, 255, 0, 255)
+        for x in range(0, self.matrix.width):
+            for y in range(0, self.matrix.height):
+                if x in GREEN:
+                    offset_canvas.SetPixel(x, y, 0, 255, 0)
+                if x in RED:
+                    offset_canvas.SetPixel(x, y, 150, 0, 0)
+                # for y in range(self.matrix.height - 15, self.matrix.height):
+                #    offset_canvas.SetPixel(x, y, 0, 0, 0)
 
-            for x in range(0, offset_canvas.width):
-                offset_canvas.SetPixel(x, 0, 255, 0, 0)
-                offset_canvas.SetPixel(x, offset_canvas.height - 1, 255, 255, 0)
-
-            for y in range(0, offset_canvas.height):
-                offset_canvas.SetPixel(0, y, 0, 0, 255)
-                offset_canvas.SetPixel(offset_canvas.width - 1, y, 0, 255, 0)
-            offset_canvas = self.matrix.SwapOnVSync(offset_canvas)
+        offset_canvas = self.matrix.SwapOnVSync(offset_canvas)
+        time.sleep(10)
 
 
 # Main function
