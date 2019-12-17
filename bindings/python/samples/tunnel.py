@@ -3,7 +3,7 @@ import time
 
 from samplebase import SampleBase
 
-RED = list(range(10, 13)) + list(range(20, 24)) + list(range(30, 64))
+RED = list(range(10, 14)) + list(range(20, 24)) + list(range(30, 64))
 ORANGE = list(range(24, 30))
 
 class SimpleSquare(SampleBase):
